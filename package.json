@@ -1,7 +1,17 @@
 {
-  "name": "my-project",
+  "name": "shotx",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "description": "Open-source tweet screenshot generator for creating polished X/Twitter share images.",
+  "license": "MIT",
+  "keywords": [
+    "nextjs",
+    "twitter",
+    "x",
+    "screenshots",
+    "social-media",
+    "open-source"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

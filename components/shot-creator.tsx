@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect, type ChangeEvent } from "react";
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  type ChangeEvent,
+} from "react";
 import { toPng } from "html-to-image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -155,7 +161,8 @@ export function ShotCreator() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedBg = backgrounds.find((bg) => bg.id === selectedBackground);
-  const activeFrame = framePresets.find((preset) => preset.id === framePreset) ?? framePresets[0];
+  const activeFrame =
+    framePresets.find((preset) => preset.id === framePreset) ?? framePresets[0];
   const computedShadow = createShadow(shadowStyle, shadowDepth, shadowAngle);
 
   const displayTweet = tweet || demoTweet;
@@ -254,7 +261,9 @@ export function ShotCreator() {
   );
 
   useEffect(() => {
-    const nextPadding = framePresets.find((preset) => preset.id === framePreset)?.basePadding;
+    const nextPadding = framePresets.find(
+      (preset) => preset.id === framePreset,
+    )?.basePadding;
     if (nextPadding) {
       setPadding(nextPadding);
     }
@@ -466,7 +475,9 @@ export function ShotCreator() {
                         )}
                       >
                         <div>
-                          <p className="text-[14px] font-medium">{preset.label}</p>
+                          <p className="text-[14px] font-medium">
+                            {preset.label}
+                          </p>
                           <p
                             className={cn(
                               "text-[12px]",
@@ -478,7 +489,9 @@ export function ShotCreator() {
                             {preset.helper}
                           </p>
                         </div>
-                        <span className="text-xs opacity-70">{preset.aspectRatio}</span>
+                        <span className="text-xs opacity-70">
+                          {preset.aspectRatio}
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -602,7 +615,8 @@ export function ShotCreator() {
                       Include reply context
                     </span>
                     <p className="mt-1 text-[12px] text-muted-foreground">
-                      Keeps the parent tweet attached when you want thread context.
+                      Keeps the parent tweet attached when you want thread
+                      context.
                     </p>
                   </div>
                   <button
@@ -707,7 +721,7 @@ export function ShotCreator() {
           </div>
         </aside>
 
-        <main className="relative order-1 flex min-w-0 flex-1 flex-col overflow-hidden bg-zinc-50 dark:bg-zinc-950/50 lg:order-2">
+        <main className="relative order-1 flex min-w-0 flex-1 flex-col overflow-hidden bg-zinc-800/50 lg:order-2">
           <div
             className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.05]"
             style={{
@@ -718,9 +732,7 @@ export function ShotCreator() {
           />
 
           <div className="z-10 flex min-h-0 flex-1 items-center justify-center overflow-hidden p-4 sm:p-8 lg:p-12">
-            <div
-              className="flex h-full w-full items-center justify-center overflow-hidden"
-            >
+            <div className="flex h-full w-full items-center justify-center overflow-hidden">
               <div
                 ref={captureRef}
                 className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[32px] border border-white/10 shadow-[0_40px_120px_rgba(15,23,42,0.28)]"
