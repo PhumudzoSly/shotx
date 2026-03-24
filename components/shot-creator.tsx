@@ -287,7 +287,7 @@ export function ShotCreator() {
   }, [handleExport]);
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-black text-foreground">
+    <div className="flex min-h-screen flex-col bg-black text-foreground lg:h-screen lg:overflow-hidden">
       <header className="z-10 flex h-16 shrink-0 items-center justify-between border-b border-border/40 bg-background/95 px-6 backdrop-blur">
         <div className="flex items-center gap-3">
           <div className="flex size-8 items-center justify-center rounded-lg bg-foreground">
@@ -317,8 +317,8 @@ export function ShotCreator() {
         </Button>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        <aside className="order-2 flex w-full shrink-0 flex-col overflow-y-auto border-r border-border/40 bg-background/50 lg:order-1 lg:w-95">
+      <div className="flex flex-1 flex-col lg:min-h-0 lg:flex-row">
+        <aside className="order-2 flex w-full flex-col border-r border-border/40 bg-background/50 lg:order-1 lg:w-95 lg:shrink-0 lg:overflow-y-auto">
           <div className="flex-1 space-y-10 p-6">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
@@ -727,7 +727,7 @@ export function ShotCreator() {
           </div>
         </aside>
 
-        <main className="relative order-1 flex min-w-0 flex-1 flex-col overflow-hidden bg-zinc-800/50 lg:order-2">
+        <main className="relative order-1 flex min-h-[50vh] flex-1 flex-col bg-zinc-800/50 lg:order-2 lg:min-h-0 lg:min-w-0 lg:overflow-hidden">
           <div
             className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.05]"
             style={{
