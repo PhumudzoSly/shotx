@@ -209,6 +209,12 @@ export function ShotCreator() {
 
     setIsExporting(true);
     try {
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve());
+        });
+      });
+
       const dataUrl = await toPng(captureRef.current, {
         quality: 1,
         pixelRatio: 3,
@@ -735,7 +741,10 @@ export function ShotCreator() {
             <div className="flex h-full w-full items-center justify-center overflow-hidden">
               <div
                 ref={captureRef}
-                className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[32px] border border-white/10 shadow-[0_40px_120px_rgba(15,23,42,0.28)]"
+                className={cn(
+                  "relative flex h-full w-full items-center justify-center overflow-hidden border border-white/10 shadow-[0_40px_120px_rgba(15,23,42,0.28)]",
+                  isExporting ? "rounded-none" : "rounded-[32px]",
+                )}
                 style={{
                   aspectRatio: activeFrame.aspectRatio,
                   maxWidth: `${activeFrame.previewMaxWidth}px`,
