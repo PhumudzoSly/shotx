@@ -157,6 +157,7 @@ export function ShotCreator() {
   const [shadowAngle, setShadowAngle] = useState(120);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [backgroundBlur, setBackgroundBlur] = useState(16);
+  const [removeTags, setRemoveTags] = useState(false);
   const captureRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -167,8 +168,9 @@ export function ShotCreator() {
     framePresets.find((preset) => preset.id === framePreset) ?? framePresets[0];
   const computedShadow = createShadow(shadowStyle, shadowDepth, shadowAngle);
 
-  const displayTweet = tweet || demoTweet;
-  const displayReply = parentTweet ? tweet : tweet ? null : demoReply;
+  // When no URL is provided, show demo data where Lee replies to Guillermo
+  const actualMainTweet = tweet || demoReply;
+  const actualParentTweet = tweet ? parentTweet : demoTweet;
 
   const fetchTweet = useCallback(async (tweetUrl: string) => {
     if (!tweetUrl.includes("twitter.com") && !tweetUrl.includes("x.com")) {
@@ -463,7 +465,28 @@ export function ShotCreator() {
                       />
                     </div>
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-[14px] font-medium text-foreground">
+                      Remove @ tags
+                    </span>
+                    <p className="mt-1 text-[12px] text-muted-foreground">
+                      Hide usernames at the start of replies.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setRemoveTags(!removeTags)}
+                    className="rounded-full text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {removeTags ? (
+                      <ToggleRight className="size-7 text-foreground" />
+                    ) : (
+                      <ToggleLeft className="size-7" />
+                    )}
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between">
                         <span className="text-[14px] font-medium text-foreground">
                           Background blur
                         </span>
@@ -827,32 +850,19 @@ export function ShotCreator() {
                       }}
                       className="flex justify-center"
                     >
-                    {parentTweet ? (
                       <TweetCard
-                        tweet={parentTweet}
-                        reply={displayTweet}
-                        showReply={showReply}
+                        tweet={actualMainTweet}
+                        reply={actualParentTweet || undefined}
+                        showReply={showReply && !!actualParentTweet}
                         roundness={roundness}
                         showMedia={showMedia}
                         tweetTheme={tweetTheme}
                         glassmorphism={glassmorphism}
                         shadow={computedShadow}
                         maxWidth={activeFrame.cardMaxWidth}
+                        removeTags={removeTags}
                       />
-                    ) : (
-                      <TweetCard
-                        tweet={displayTweet}
-                        reply={displayReply || undefined}
-                        showReply={showReply && !!displayReply}
-                        roundness={roundness}
-                        showMedia={showMedia}
-                        tweetTheme={tweetTheme}
-                        glassmorphism={glassmorphism}
-                        shadow={computedShadow}
-                        maxWidth={activeFrame.cardMaxWidth}
-                      />
-                    )}
-                  </div>
+                    </div>
                 </div>
               </div>
             </div>

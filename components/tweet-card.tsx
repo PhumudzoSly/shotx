@@ -35,6 +35,7 @@ interface TweetCardProps {
   glassmorphism?: boolean;
   shadow?: string;
   maxWidth?: number;
+  removeTags?: boolean;
 }
 
 interface TweetVisualTheme {
@@ -135,16 +136,23 @@ function SingleTweet({
   isReply,
   showMedia,
   theme,
+  removeTags,
 }: {
   tweet: Tweet;
   isReply?: boolean;
   showMedia?: boolean;
   theme: TweetVisualTheme;
+  removeTags?: boolean;
 }) {
   // Regex to remove tweet URLs from the content if media is being hidden
-  const content = showMedia
+  let content = showMedia
     ? tweet.content
     : tweet.content.replace(/https:\/\/t\.co\/[a-zA-Z0-9]+/g, "").trim();
+
+  // Remove leading @ tags if requested
+  if (removeTags) {
+    content = content.replace(/^(@[\w_]+\s+)+/g, "").trim();
+  }
 
   return (
     <div className="flex gap-3">
@@ -211,6 +219,7 @@ export function TweetCard({
   glassmorphism = false,
   shadow,
   maxWidth = 500,
+  removeTags = false,
 }: TweetCardProps) {
   const theme = tweetThemes[tweetTheme];
 
@@ -235,12 +244,14 @@ export function TweetCard({
             isReply
             showMedia={showMedia}
             theme={theme}
+            removeTags={removeTags}
           />
           <div className="mt-3" />
           <SingleTweet
             tweet={tweet}
             showMedia={showMedia}
             theme={theme}
+            removeTags={removeTags}
           />
         </>
       ) : (
@@ -248,6 +259,7 @@ export function TweetCard({
           tweet={tweet}
           showMedia={showMedia}
           theme={theme}
+          removeTags={removeTags}
         />
       )}
     </div>
