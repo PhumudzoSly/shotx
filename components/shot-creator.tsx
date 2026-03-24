@@ -158,7 +158,9 @@ export function ShotCreator() {
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [backgroundBlur, setBackgroundBlur] = useState(16);
   const captureRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewScale, setPreviewScale] = useState(1);
 
   const selectedBg = backgrounds.find((bg) => bg.id === selectedBackground);
   const activeFrame =
@@ -285,6 +287,40 @@ export function ShotCreator() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleExport]);
+
+  useEffect(() => {
+    const updateScale = () => {
+      if (!containerRef.current) return;
+      
+      // Calculate available space, padding 32px (16px each side)
+      const availableWidth = containerRef.current.clientWidth;
+      const availableHeight = containerRef.current.clientHeight;
+      
+      const [w, h] = activeFrame.aspectRatio.split('/').map(Number);
+      const ratio = w / h;
+      
+      const targetWidth = activeFrame.previewMaxWidth;
+      const targetHeight = targetWidth / ratio;
+      
+      const scaleX = availableWidth / targetWidth;
+      const scaleY = availableHeight / targetHeight;
+      
+      // Use the smaller scale to ensure it fits both horizontally and vertically
+      const minScale = Math.min(scaleX, scaleY, 1);
+      
+      setPreviewScale(minScale);
+    };
+
+    updateScale();
+    
+    // Add resize observer for more reliable resize detection
+    const observer = new ResizeObserver(updateScale);
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    
+    return () => observer.disconnect();
+  }, [activeFrame]);
 
   return (
     <div className="flex min-h-screen flex-col bg-black text-foreground lg:h-screen lg:overflow-hidden">
@@ -738,47 +774,59 @@ export function ShotCreator() {
           />
 
           <div className="z-10 flex min-h-0 flex-1 items-center justify-center overflow-hidden p-4 sm:p-8 lg:p-12">
-            <div className="flex h-full w-full items-center justify-center overflow-hidden">
+            <div 
+              ref={containerRef}
+              className="flex h-full w-full items-center justify-center overflow-hidden"
+            >
               <div
-                ref={captureRef}
-                className={cn(
-                  "relative flex h-full w-full items-center justify-center overflow-hidden border border-white/10 shadow-[0_40px_120px_rgba(15,23,42,0.28)]",
-                  isExporting ? "rounded-none" : "rounded-[32px]",
-                )}
                 style={{
-                  aspectRatio: activeFrame.aspectRatio,
-                  maxWidth: `${activeFrame.previewMaxWidth}px`,
-                  maxHeight: "100%",
+                  transform: `scale(${previewScale})`,
+                  transformOrigin: "center",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: `${activeFrame.previewMaxWidth}px`,
+                  flexShrink: 0,
                 }}
               >
-                <div className={cn("absolute inset-0", selectedBg?.style)} />
-                {backgroundImage && (
-                  <>
-                    <div
-                      className="absolute inset-[-3%] bg-center bg-cover opacity-90"
-                      style={{
-                        backgroundImage: `url(${backgroundImage})`,
-                        filter: `blur(${backgroundBlur}px)`,
-                        transform: "scale(1.08)",
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-black/20" />
-                  </>
-                )}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.22),transparent_45%)]" />
                 <div
-                  className="relative z-10 flex h-full w-full items-center justify-center"
-                  style={{ padding: `${padding}px` }}
+                  ref={captureRef}
+                  className={cn(
+                    "relative flex w-full items-center justify-center overflow-hidden border border-white/10 shadow-[0_40px_120px_rgba(15,23,42,0.28)]",
+                    isExporting ? "rounded-none" : "rounded-[32px]",
+                  )}
+                  style={{
+                    aspectRatio: activeFrame.aspectRatio,
+                  }}
                 >
+                  <div className={cn("absolute inset-0", selectedBg?.style)} />
+                  {backgroundImage && (
+                    <>
+                      <div
+                        className="absolute inset-[-3%] bg-center bg-cover opacity-90"
+                        style={{
+                          backgroundImage: `url(${backgroundImage})`,
+                          filter: `blur(${backgroundBlur}px)`,
+                          transform: "scale(1.08)",
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/20" />
+                    </>
+                  )}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.22),transparent_45%)]" />
                   <div
-                    style={{
-                      transform: `scale(${scale})`,
-                      transformOrigin: "center",
-                      width: "100%",
-                      maxWidth: `${activeFrame.cardMaxWidth}px`,
-                    }}
-                    className="flex justify-center"
+                    className="relative z-10 flex h-full w-full items-center justify-center"
+                    style={{ padding: `${padding}px` }}
                   >
+                    <div
+                      style={{
+                        transform: `scale(${scale})`,
+                        transformOrigin: "center",
+                        width: "100%",
+                        maxWidth: `${activeFrame.cardMaxWidth}px`,
+                      }}
+                      className="flex justify-center"
+                    >
                     {parentTweet ? (
                       <TweetCard
                         tweet={parentTweet}
@@ -809,8 +857,9 @@ export function ShotCreator() {
               </div>
             </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
-  );
+  </div>
+);
 }
